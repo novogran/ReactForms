@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { type Country } from '../../types';
 
-interface CountryState {
+export interface CountryState {
   countries: Country[];
 }
 
