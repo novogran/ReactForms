@@ -7,6 +7,7 @@ import type {
 } from 'react-hook-form';
 import { useState } from 'react';
 import { useAppSelector } from '../../store/hooks';
+import { getPasswordStrength } from '../../utils/passwordStrength';
 
 interface FormFieldsProps {
   register?: UseFormRegister<FormValues>;
@@ -27,16 +28,6 @@ export const FormFields = ({
   const [showPassword, setShowPassword] = useState(false);
 
   const allCountries = useAppSelector((state) => state.country.countries);
-
-  const getPasswordStrength = (password: string): number => {
-    let strength = 0;
-    if (password.length >= 8) strength++;
-    if (/[0-9]/.test(password)) strength++;
-    if (/[A-Z]/.test(password)) strength++;
-    if (/[a-z]/.test(password)) strength++;
-    if (/[^A-Za-z0-9]/.test(password)) strength++;
-    return strength;
-  };
 
   const passwordStrength = getPasswordStrength(displayPassword);
   const strengthLabels = [
