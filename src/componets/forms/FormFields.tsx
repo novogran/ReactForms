@@ -15,6 +15,7 @@ interface FormFieldsProps {
   watch?: UseFormWatch<FormValues>;
   countries: Country[];
   submittedPassword?: string;
+  submittedConfirmPassword?: string;
 }
 
 export const FormFields = ({
@@ -22,9 +23,14 @@ export const FormFields = ({
   errors,
   watch,
   submittedPassword = '',
+  submittedConfirmPassword = '',
 }: FormFieldsProps) => {
   const passwordValue = watch?.('password') || '';
+  const confirmPasswordValue = watch?.('confirmPassword') || '';
   const displayPassword = register ? passwordValue : submittedPassword;
+  const displayConfirmPassword = register
+    ? confirmPasswordValue
+    : submittedConfirmPassword;
   const [showPassword, setShowPassword] = useState(false);
 
   const allCountries = useAppSelector((state) => state.country.countries);
@@ -138,11 +144,10 @@ export const FormFields = ({
           {...(register && register('confirmPassword'))}
           className={errors?.confirmPassword ? 'error' : ''}
         />
-        <span className="error-message">
-          {errors?.confirmPassword?.message}
-        </span>
+        {displayPassword !== displayConfirmPassword && (
+          <span className="error-message">Passwords do not match</span>
+        )}
       </div>
-
       <div className="form-group">
         <label>Gender</label>
         <div className="radio-group">

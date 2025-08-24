@@ -18,6 +18,7 @@ const UncontrolledForm = ({ onClose, countries }: UncontrolledFormProps) => {
   const formRef = useRef<HTMLFormElement>(null);
   const [formErrors, setFormErrors] = useState<FieldErrors<FormValues>>({});
   const [submittedPassword, setSubmittedPassword] = useState('');
+  const [submittedConfirmPassword, setSubmittedConfirmPassword] = useState('');
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -27,13 +28,15 @@ const UncontrolledForm = ({ onClose, countries }: UncontrolledFormProps) => {
     const formData = new FormData(formRef.current);
     const password = formData.get('password') as string;
     setSubmittedPassword(password);
+    const confirmPassword = formData.get('confirmPassword') as string;
+    setSubmittedConfirmPassword(confirmPassword);
 
     const rawData = {
       name: formData.get('name') as string,
       age: Number(formData.get('age')),
       email: formData.get('email') as string,
       password: password,
-      confirmPassword: formData.get('confirmPassword') as string,
+      confirmPassword: confirmPassword,
       gender: formData.get('gender') as string,
       acceptTerms: formData.get('acceptTerms') === 'on',
       country: formData.get('country') as string,
@@ -99,6 +102,7 @@ const UncontrolledForm = ({ onClose, countries }: UncontrolledFormProps) => {
         countries={countries}
         errors={formErrors}
         submittedPassword={submittedPassword}
+        submittedConfirmPassword={submittedConfirmPassword}
       />
 
       <div className="form-actions">
