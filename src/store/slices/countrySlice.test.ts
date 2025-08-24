@@ -5,7 +5,6 @@ describe('countrySlice', () => {
   it('должен возвращать начальное состояние', () => {
     const state = countryReducer(undefined, { type: 'unknown' });
 
-    // Проверяем основные свойства вместо точного сравнения массива
     expect(state).toHaveProperty('countries');
     expect(state.countries).toHaveLength(20);
     expect(state.countries[0]).toHaveProperty('code');
@@ -20,15 +19,12 @@ describe('countrySlice', () => {
   it('должен содержать отсортированные страны по алфавиту', () => {
     const state = countryReducer(undefined, { type: 'unknown' });
 
-    // Создаем копию и сортируем для сравнения
     const sortedCountries = [...state.countries].sort((a, b) =>
       a.name.localeCompare(b.name)
     );
 
-    // Проверяем что массив отсортирован
     expect(state.countries).toEqual(sortedCountries);
 
-    // Проверяем первую и последнюю страну
     const firstCountry = state.countries[0].name;
     const lastCountry = state.countries[state.countries.length - 1].name;
     expect(firstCountry < lastCountry).toBe(true);

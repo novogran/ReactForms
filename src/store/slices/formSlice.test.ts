@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import formReducer, {
   addSubmission,
   clearNewSubmission,
@@ -21,6 +21,14 @@ describe('formSlice', () => {
     formType: 'uncontrolled',
   };
 
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('должен возвращать начальное состояние', () => {
     const state = formReducer(undefined, { type: 'unknown' });
     expect(state).toEqual({
@@ -30,13 +38,14 @@ describe('formSlice', () => {
   });
 
   it('должен добавлять новую заявку', () => {
+    vi.setSystemTime(1000);
     const action = addSubmission(mockFormData);
     const state = formReducer(undefined, action);
 
     expect(state.submissions).toHaveLength(1);
     expect(state.submissions[0].name).toBe('John Doe');
-    expect(state.submissions[0].id).toBeDefined();
-    expect(state.newSubmissionId).toBe(state.submissions[0].id);
+    expect(state.submissions[0].id).toBe('1000');
+    expect(state.newSubmissionId).toBe('1000');
   });
 
   it('должен очищать ID новой заявки', () => {
@@ -65,13 +74,16 @@ describe('formSlice', () => {
   });
 
   it('должен генерировать уникальный ID для каждой заявки', () => {
+    vi.setSystemTime(1000);
     const action1 = addSubmission(mockFormData);
     const state1 = formReducer(undefined, action1);
 
+    vi.setSystemTime(2000);
     const action2 = addSubmission(mockFormData);
     const state2 = formReducer(state1, action2);
 
-    expect(state1.submissions[0].id).not.toBe(state2.submissions[1].id);
+    expect(state1.submissions[0].id).toBe('1000');
+    expect(state2.submissions[1].id).toBe('2000');
     expect(state2.submissions).toHaveLength(2);
   });
 });

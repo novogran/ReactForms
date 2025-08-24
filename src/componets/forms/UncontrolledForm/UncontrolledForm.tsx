@@ -18,15 +18,16 @@ const UncontrolledForm = ({ onClose, countries }: UncontrolledFormProps) => {
   const formRef = useRef<HTMLFormElement>(null);
   const [formErrors, setFormErrors] = useState<FieldErrors<FormValues>>({});
   const [submittedPassword, setSubmittedPassword] = useState('');
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
     if (!formRef.current) return;
 
     const formData = new FormData(formRef.current);
-    const profilePictureFile = formData.get('profilePicture') as File | null;
     const password = formData.get('password') as string;
     setSubmittedPassword(password);
+
     const rawData = {
       name: formData.get('name') as string,
       age: Number(formData.get('age')),
@@ -35,27 +36,25 @@ const UncontrolledForm = ({ onClose, countries }: UncontrolledFormProps) => {
       confirmPassword: formData.get('confirmPassword') as string,
       gender: formData.get('gender') as string,
       acceptTerms: formData.get('acceptTerms') === 'on',
-      profilePicture: profilePictureFile,
       country: formData.get('country') as string,
     };
 
     try {
+      const profilePictureInput = formRef.current.elements.namedItem(
+        'profilePicture'
+      ) as HTMLInputElement;
+      const profilePictureFile = profilePictureInput.files?.[0] || null;
+
       const dataToValidate = {
         ...rawData,
-        profilePicture: profilePictureFile
-          ? createFileList(profilePictureFile)
-          : undefined,
+        profilePicture: profilePictureInput.files,
       };
 
       const validatedData = formSchema.parse(dataToValidate);
 
       let profilePictureBase64: string | null = null;
-      if (
-        validatedData.profilePicture &&
-        validatedData.profilePicture.length > 0
-      ) {
-        const file = validatedData.profilePicture[0];
-        profilePictureBase64 = await convertFileToBase64(file);
+      if (profilePictureFile) {
+        profilePictureBase64 = await convertFileToBase64(profilePictureFile);
       }
 
       const submissionData = {
@@ -92,17 +91,6 @@ const UncontrolledForm = ({ onClose, countries }: UncontrolledFormProps) => {
         alert('An unexpected error occurred. Please try again.');
       }
     }
-  };
-
-  const createFileList = (file: File): FileList => {
-    return {
-      0: file,
-      length: 1,
-      item: (index: number) => (index === 0 ? file : null),
-      [Symbol.iterator]: function* () {
-        yield file;
-      },
-    } as unknown as FileList;
   };
 
   return (
